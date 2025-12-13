@@ -1,0 +1,31 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Orders {
+  id           String   @id @db.VarChar(100)
+  comprador    String   @db.VarChar(100)
+  destinatario String   @db.VarChar(100)
+  direccion    String   @db.VarChar(100)
+  telefono     Int
+  createdAt    DateTime @db.DateTime(0)
+  updatedAt    DateTime @db.DateTime(0)
+  Products     Products @relation(fields: [id], references: [id], onDelete: NoAction, onUpdate: Restrict, map: "orders_products_FK")
+}
+
+model Products {
+  id          String   @id @db.VarChar(100)
+  nombre      String   @db.VarChar(100)
+  precio      Int
+  descripcion String   @db.VarChar(100)
+  categoria   String   @db.VarChar(100)
+  createdAt   DateTime @db.DateTime(0)
+  updatedAt   DateTime @db.DateTime(0)
+  Orders      Orders?
+}
