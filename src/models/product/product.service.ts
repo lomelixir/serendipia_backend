@@ -1,17 +1,28 @@
 import { Injectable } from '@nestjs/common';
+import { PrismaService } from 'src/prisma.service';
+import { Products, Prisma } from '@prisma/client';
 
 @Injectable()
 export class ProductService {
-  findAll(): string {
-    return 'find all method';
+  constructor(private prisma: PrismaService) {}
+  findAll() {
+    try {
+    } catch (error) {
+      console.error(`Error retrieving products $${error}`);
+    }
   }
 
   findOne(): string {
     return 'find one method';
   }
 
-  create(): string {
-    return 'create method';
+  async create(data: Prisma.ProductsCreateInput): Promise<Products> {
+    try {
+      return this.prisma.products.create({ data });
+    } catch (error) {
+      console.error(`Error cretating product ${error}`);
+      throw error;
+    }
   }
 
   update(): string {
