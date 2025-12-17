@@ -1,6 +1,16 @@
-import { Controller, Get, Post, Delete, Put, Body } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Delete,
+  Put,
+  Body,
+  Param,
+} from '@nestjs/common';
 import { ProductService } from './product.service';
 import { CreateProductDto } from './dtoProduct/create-product.dto';
+import { Products } from '@prisma/client';
+import { UpdateProductDto } from './dtoProduct/update-product.dto';
 
 @Controller('product')
 export class ProductController {
@@ -11,23 +21,23 @@ export class ProductController {
     return this.productService.findAll();
   }
 
-  @Get()
-  findOne(): string {
-    return this.productService.findOne();
+  @Get('/:id')
+  findOne(@Param('id') id: string) {
+    return this.productService.findOne(id);
   }
 
   @Post()
-  create(@Body() data): Promise<any> {
-    return this.productService.create(data);
+  create(@Body() createProductDto: CreateProductDto): Promise<Products> {
+    return this.productService.create(createProductDto);
   }
 
-  @Put()
-  update(): string {
-    return this.productService.update();
+  @Put('/:id')
+  update(@Param('id') id: string, updateProductDto: UpdateProductDto) {
+    return this.productService.update(id, updateProductDto);
   }
 
-  @Delete()
-  remove(): string {
-    return this.productService.remove();
+  @Delete('/:id')
+  remove(@Param('id') id: string) {
+    return this.productService.remove(id);
   }
 }

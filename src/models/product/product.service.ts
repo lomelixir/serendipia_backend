@@ -1,35 +1,76 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma.service';
-import { Products, Prisma } from '@prisma/client';
+import { Products } from '@prisma/client';
+import { CreateProductDto } from './dtoProduct/create-product.dto';
+import { v4 as uuidv4 } from 'uuid';
+import { UpdateProductDto } from './dtoProduct/update-product.dto';
 
 @Injectable()
 export class ProductService {
   constructor(private prisma: PrismaService) {}
-  findAll() {
+
+  async findAll() {
     try {
+      return await this.prisma.products.findMany();
     } catch (error) {
       console.error(`Error retrieving products $${error}`);
-    }
-  }
-
-  findOne(): string {
-    return 'find one method';
-  }
-
-  async create(data: Prisma.ProductsCreateInput): Promise<Products> {
-    try {
-      return this.prisma.products.create({ data });
-    } catch (error) {
-      console.error(`Error cretating product ${error}`);
       throw error;
     }
   }
 
-  update(): string {
-    return 'update method';
+  async findOne(id: string) {
+    try {
+      return await this.prisma.products.findUnique({
+        where: {
+          id: id,
+        },
+      });
+    } catch (error) {
+      console.log(`Error retrieving entity ${error}`);
+      throw error;
+    }
   }
 
-  remove(): string {
-    return 'delete method';
+  async create(createProductDto: CreateProductDto): Promise<Products> {
+    try {
+      return await this.prisma.products.create({
+        data: {
+          id: uuidv4(),
+          ...createProductDto,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+      });
+    } catch (error) {
+      console.error(`Error creating product ${error}`);
+      throw error;
+    }
+  }
+
+  async update(
+    id: string,
+    updateProductDto: UpdateProductDto,
+  ): Promise<Products | undefined> {
+    try {
+      return await this.prisma.products.update({
+        where: { id },
+        data: {
+          ...updateProductDto,
+          updatedAt: new Date(),
+        },
+      });
+    } catch (error) {
+      console.error(`Error updating entity ${error}`);
+      throw error;
+    }
+  }
+
+  async remove(id: string) {
+    try {
+      return await this.prisma.products.delete({ where: { id } });
+    } catch (error) {
+      console.error(`Error deleting entity ${error}`);
+      throw error;
+    }
   }
 }
